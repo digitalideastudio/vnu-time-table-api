@@ -118,7 +118,12 @@ export class AppService {
     const content = await this.page
       .waitForSelector('body')
       .then((body) => body.evaluate((el) => el.innerHTML))
-      .then((html) => JSON.parse(html))
+      .then((html) => {
+        console.log(`Retrieved content for ${url}:`);
+        console.log(html);
+
+        return JSON.parse(html);
+      })
       .catch((e) => {
         console.error(e.message);
         return {};
@@ -141,6 +146,10 @@ export class AppService {
     params.append('faculty', facultyId);
     params.append('course', studyYear);
     params.append('query', search);
+
+    console.log(
+      `Getting groups for faculty ${facultyId}, year ${studyYear}, search ${search}`,
+    );
 
     return this.getPageContent(`${API_URL}?${params.toString()}`).then(
       (data) => data.suggestions,
