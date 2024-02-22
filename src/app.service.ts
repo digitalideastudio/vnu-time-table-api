@@ -125,8 +125,8 @@ export class AppService {
         return JSON.parse(html);
       })
       .catch((e) => {
-        console.error(e.message);
-        return {};
+        // console.error(e.message);
+        return null;
       });
 
     await this.cacheManager.set(cacheKey, content, 60 * 60 * 1000); // 1 hour
@@ -152,7 +152,7 @@ export class AppService {
     );
 
     return this.getPageContent(`${API_URL}?${params.toString()}`).then(
-      (data) => data.suggestions,
+      (data) => data?.suggestions || [],
     );
   }
 }
