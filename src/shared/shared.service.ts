@@ -77,7 +77,96 @@ export default class SharedService {
       `Returning fresh value in ${process.hrtime(perfT1)}ms for ${request}:`,
     );
 
-    console.log(content);
+    // console.log(content);
     return content;
+  }
+
+  /**
+   * Encodes a string to windows-1251 and then to URI component
+   *
+   * @param str
+   * @example: "Інф-25О" -> "%B2%ED%F4-25%CE"
+   */
+  public encodeWin1251ToURIComponent(str: string): string {
+    const win1251Mapping = {
+      А: 'C0',
+      Б: 'C1',
+      В: 'C2',
+      Г: 'C3',
+      Д: 'C4',
+      Е: 'C5',
+      Ж: 'C6',
+      З: 'C7',
+      И: 'C8',
+      Й: 'C9',
+      К: 'CA',
+      Л: 'CB',
+      М: 'CC',
+      Н: 'CD',
+      О: 'CE',
+      П: 'CF',
+      Р: 'D0',
+      С: 'D1',
+      Т: 'D2',
+      У: 'D3',
+      Ф: 'D4',
+      Х: 'D5',
+      Ц: 'D6',
+      Ч: 'D7',
+      Ш: 'D8',
+      Щ: 'D9',
+      Ъ: 'DA',
+      Ы: 'DB',
+      Ь: 'DC',
+      Э: 'DD',
+      Ю: 'DE',
+      Я: 'DF',
+      а: 'E0',
+      б: 'E1',
+      в: 'E2',
+      г: 'E3',
+      д: 'E4',
+      е: 'E5',
+      ж: 'E6',
+      з: 'E7',
+      и: 'E8',
+      й: 'E9',
+      к: 'EA',
+      л: 'EB',
+      м: 'EC',
+      н: 'ED',
+      о: 'EE',
+      п: 'EF',
+      р: 'F0',
+      с: 'F1',
+      т: 'F2',
+      у: 'F3',
+      ф: 'F4',
+      х: 'F5',
+      ц: 'F6',
+      ч: 'F7',
+      ш: 'F8',
+      щ: 'F9',
+      ъ: 'FA',
+      ы: 'FB',
+      ь: 'FC',
+      э: 'FD',
+      ю: 'FE',
+      я: 'FF',
+      // Special characters
+      Ё: 'A8',
+      ё: 'B8',
+      Є: 'AA',
+      є: 'BA',
+      Ї: 'AF',
+      ї: 'BF',
+      І: 'B2',
+      і: 'A5',
+      // Add other mappings as needed
+    };
+
+    return Array.from(str)
+      .map((char) => (win1251Mapping[char] ? '%' + win1251Mapping[char] : char))
+      .join('');
   }
 }

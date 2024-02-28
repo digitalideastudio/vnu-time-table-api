@@ -22,7 +22,7 @@ export default class TimetableController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Post()
-  async get(@Body('config') config: GetTimetableDto) {
+  async get(@Body() config: GetTimetableDto) {
     return this.timetableService.get(config);
   }
 }

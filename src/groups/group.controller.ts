@@ -34,8 +34,8 @@ export default class GroupController {
     isArray: true,
   })
   @Get('search')
-  async search(@Query('search') search: string): Promise<Group[]> {
-    return this.groupService.search(search);
+  async search(@Query('term') term: string): Promise<Group[]> {
+    return this.groupService.search(term);
   }
 
   @ApiOperation({ summary: 'Sync groups with source' })

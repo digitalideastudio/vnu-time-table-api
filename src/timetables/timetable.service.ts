@@ -17,30 +17,6 @@ export default class TimetableService {
   public async get(dto: GetTimetableDto) {
     const { startDate, endDate, groupId } = dto;
 
-    if (!startDate || !endDate || !groupId) {
-      const errors = {};
-
-      if (!startDate) {
-        errors['startDate'] = 'ERR_BAD_INPUT';
-      }
-
-      if (!endDate) {
-        errors['endDate'] = 'ERR_BAD_INPUT';
-      }
-
-      if (!groupId) {
-        errors['groupId'] = 'ERR_BAD_INPUT';
-      }
-
-      throw new HttpException(
-        {
-          message: 'ERR_BAD_INPUT',
-          errors,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     const group = await this.groupService.findOne(groupId);
 
     if (!group) {
@@ -64,26 +40,6 @@ export default class TimetableService {
     const edate = new Date(endDate).toLocaleDateString('uk-UA');
     // const edate = '30.04.2024';
 
-    if (sdate === 'Invalid Date' || edate === 'Invalid Date') {
-      const errors = {};
-
-      if (sdate === 'Invalid Date') {
-        errors['startDate'] = 'ERR_BAD_INPUT';
-      }
-
-      if (edate === 'Invalid Date') {
-        errors['endDate'] = 'ERR_BAD_INPUT';
-      }
-
-      throw new HttpException(
-        {
-          message: 'ERR_BAD_INPUT',
-          errors,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     params.append('faculty', '0');
     params.append('teacher', '');
     params.append('course', '0');
@@ -91,10 +47,15 @@ export default class TimetableService {
     params.append('edate', edate);
     params.append('n', '700');
 
-    console.log(
-      `Getting groups for faculty ${group.name}, start date ${sdate}, end date ${edate}`,
+    const encodedGroup = this.sharedService.encodeWin1251ToURIComponent(
+      group.refKey,
     );
-    const command = `"${API_URL}?n=700" --data-raw '${params.toString()}&group=${group.refKey}'`;
+
+    console.log(
+      `Getting groups for faculty ${encodedGroup}, start date ${sdate}, end date ${edate}`,
+    );
+    // const command = `"${API_URL}?n=700" --data-raw '${params.toString()}&group=${group.refKey}'`;
+    const command = `"${API_URL}?n=700" --data-raw '${params.toString()}&group=${encodedGroup}'`;
     console.log(`Running command: ${command}`);
 
     return this.sharedService.getPageContentWithCurl(command).then((html) => {
@@ -106,16 +67,48 @@ export default class TimetableService {
         throw new DatabaseException();
       }
 
-      const root = parse(html);
+      const tableHtml = html.match(/<table[^>]*>[\s\S]*?<\/table>/g);
+      const fixedTableHtml = tableHtml?.[0]?.replace(
+        /<\/tr><\/div><div class="row"><tr>/g,
+        '</tr><tr>',
+      );
 
-      return Array.from<HTMLTableRowElement>(
-        root.querySelectorAll(
-          'table tr',
-        ) as unknown as NodeListOf<HTMLTableRowElement>,
-      ).map((tr) => ({
-        num: tr.children[0].textContent,
-        time: tr.children[1].textContent,
-        subject: tr.children[2].textContent,
+      if (!fixedTableHtml) {
+        throw new EmptyResponseException();
+      }
+
+      const table = parse(fixedTableHtml, {
+        lowerCaseTagName: true,
+        parseNoneClosedTags: true,
+        voidTag: {
+          tags: [
+            'div',
+            'area',
+            'base',
+            'br',
+            'col',
+            'embed',
+            'hr',
+            'img',
+            'input',
+            'link',
+            'meta',
+            'param',
+            'source',
+            'track',
+            'wbr',
+            'script',
+            'style',
+          ],
+          closingSlash: true,
+        },
+      }) as unknown as HTMLTableElement;
+
+      // @ts-ignore
+      return table.childNodes[0].childNodes.flatMap((tr) => ({
+        number: tr.childNodes[0]?.textContent?.trim(),
+        time: tr.childNodes[1]?.textContent?.trim(),
+        subject: tr.childNodes[2]?.textContent?.trim(),
       }));
     });
   }
