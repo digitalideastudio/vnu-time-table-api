@@ -1,7 +1,13 @@
-import { Contains, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  Contains,
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export default class UpdateStudentDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   readonly id: number;
 
@@ -14,12 +20,21 @@ export default class UpdateStudentDto {
   @IsEmail()
   readonly email: string;
 
+  @IsNumber()
   @IsNotEmpty()
   readonly facultyId: number;
 
+  @IsNumber()
   @IsNotEmpty()
   readonly year: number;
 
+  @IsNumber()
   @IsNotEmpty()
   readonly groupId: number;
+
+  @IsNotEmpty()
+  locale: string;
+
+  @IsNotEmpty()
+  deviceLocale: string;
 }

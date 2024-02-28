@@ -58,58 +58,79 @@ export default class TimetableService {
     const command = `"${API_URL}?n=700" --data-raw '${params.toString()}&group=${encodedGroup}'`;
     console.log(`Running command: ${command}`);
 
-    return this.sharedService.getPageContentWithCurl(command).then((html) => {
-      if (!html) {
-        throw new EmptyResponseException();
-      }
+    return this.sharedService
+      .getPageContentWithCurl(command)
+      .then((html) => {
+        if (!html) {
+          throw new EmptyResponseException();
+        }
 
-      if (html.includes('EIBInterBaseError')) {
-        throw new DatabaseException();
-      }
+        if (html.includes('EIBInterBaseError')) {
+          throw new DatabaseException();
+        }
 
-      const tableHtml = html.match(/<table[^>]*>[\s\S]*?<\/table>/g);
-      const fixedTableHtml = tableHtml?.[0]?.replace(
-        /<\/tr><\/div><div class="row"><tr>/g,
-        '</tr><tr>',
-      );
+        const tableHtml = html.match(/<table[^>]*>[\s\S]*?<\/table>/g);
+        const fixedTableHtml = tableHtml?.[0]?.replace(
+          /<\/tr><\/div><div class="row"><tr>/g,
+          '</tr><tr>',
+        );
 
-      if (!fixedTableHtml) {
-        throw new EmptyResponseException();
-      }
+        if (!fixedTableHtml) {
+          throw new EmptyResponseException();
+        }
 
-      const table = parse(fixedTableHtml, {
-        lowerCaseTagName: true,
-        parseNoneClosedTags: true,
-        voidTag: {
-          tags: [
-            'div',
-            'area',
-            'base',
-            'br',
-            'col',
-            'embed',
-            'hr',
-            'img',
-            'input',
-            'link',
-            'meta',
-            'param',
-            'source',
-            'track',
-            'wbr',
-            'script',
-            'style',
-          ],
-          closingSlash: true,
-        },
-      }) as unknown as HTMLTableElement;
+        const table = parse(fixedTableHtml, {
+          lowerCaseTagName: true,
+          parseNoneClosedTags: true,
+          voidTag: {
+            tags: [
+              'div',
+              'area',
+              'base',
+              'br',
+              'col',
+              'embed',
+              'hr',
+              'img',
+              'input',
+              'link',
+              'meta',
+              'param',
+              'source',
+              'track',
+              'wbr',
+              'script',
+              'style',
+            ],
+            closingSlash: true,
+          },
+        }) as unknown as HTMLTableElement;
 
-      // @ts-ignore
-      return table.childNodes[0].childNodes.flatMap((tr) => ({
-        number: tr.childNodes[0]?.textContent?.trim(),
-        time: tr.childNodes[1]?.textContent?.trim(),
-        subject: tr.childNodes[2]?.textContent?.trim(),
-      }));
-    });
+        // @ts-ignore
+        return table.childNodes[0].childNodes.flatMap((tr) => ({
+          number: tr.childNodes[0]?.textContent?.trim(),
+          time: tr.childNodes[1]?.textContent?.trim(),
+          subject: tr.childNodes[2]?.textContent?.trim(),
+        }));
+      })
+      .catch((e) => {
+        if (e instanceof EmptyResponseException) {
+          throw new HttpException(
+            {
+              message: 'ERR_NOT_FOUND',
+              errors: { groupId: 'ERR_NOT_FOUND' },
+            },
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        throw new HttpException(
+          {
+            message: 'ERR_INTERNAL',
+            errors: { groupId: 'ERR_INTERNAL' },
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      });
   }
 }

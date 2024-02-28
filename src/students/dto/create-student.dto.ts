@@ -18,4 +18,10 @@ export default class CreateStudentDto {
 
   @IsNotEmpty()
   readonly groupId: number;
+
+  @IsNotEmpty()
+  locale: string;
+
+  @IsNotEmpty()
+  deviceLocale: string;
 }

@@ -60,18 +60,28 @@ export default class Student {
   @Property({ onUpdate: () => new Date() })
   updatedAt = new Date();
 
+  @Property()
+  locale: string;
+
+  @Property()
+  deviceLocale: string;
+
   constructor(
     email: string,
     expoPushToken: string,
     faculty: Faculty,
     group: Group,
     year: number,
+    locale: string,
+    deviceLocale: string,
   ) {
     this.faculty = faculty;
     this.expoPushToken = expoPushToken;
     this.email = email;
     this.year = year;
     this.group = group;
+    this.locale = locale;
+    this.deviceLocale = deviceLocale;
   }
 
   public toJSON() {

@@ -25,7 +25,15 @@ export default class StudentService {
   }
 
   public async register(dto: CreateStudentDto): Promise<IStudentRO> {
-    const { expoPushToken, email, facultyId, year, groupId } = dto;
+    const {
+      expoPushToken,
+      email,
+      facultyId,
+      year,
+      groupId,
+      locale,
+      deviceLocale,
+    } = dto;
 
     const exists = await this.studentRepository.count({
       $or: [{ email }],
@@ -66,7 +74,15 @@ export default class StudentService {
     }
 
     // Create new student
-    const student = new Student(email, expoPushToken, faculty, group, year);
+    const student = new Student(
+      email,
+      expoPushToken,
+      faculty,
+      group,
+      year,
+      locale,
+      deviceLocale,
+    );
     const errors = await validate(student);
 
     if (errors.length > 0) {
@@ -140,6 +156,8 @@ export default class StudentService {
       faculty: student.faculty,
       year: student.year,
       group: student.group,
+      locale: student.locale,
+      deviceLocale: student.deviceLocale,
     };
 
     return { student: studentRO };

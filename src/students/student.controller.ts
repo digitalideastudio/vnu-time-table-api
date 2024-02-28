@@ -23,7 +23,7 @@ export default class StudentController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Post()
-  async register(@Body('student') studentData: CreateStudentDto) {
+  async register(@Body() studentData: CreateStudentDto) {
     return this.studentService.register(studentData);
   }
 
@@ -34,7 +34,7 @@ export default class StudentController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Put()
-  async update(@Body('student') studentData: UpdateStudentDto) {
+  async update(@Body() studentData: UpdateStudentDto) {
     return this.studentService.update(studentData);
   }
 

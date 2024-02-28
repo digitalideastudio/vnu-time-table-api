@@ -19,7 +19,7 @@ import { TimetableModule } from './timetables/timetable.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 10,
+        limit: 30,
       },
     ]),
     MikroOrmModule.forRoot(),

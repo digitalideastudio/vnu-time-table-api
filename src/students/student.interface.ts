@@ -7,6 +7,8 @@ export interface IStudentData {
   faculty: Faculty;
   group: Group;
   year: number;
+  locale: string;
+  deviceLocale: string;
 }
 
 export interface IStudentRO {
