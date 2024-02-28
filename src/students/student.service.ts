@@ -163,8 +163,8 @@ export default class StudentService {
     return { student: studentRO };
   }
 
-  public async sendPushNotification(userId: number, message: string) {
-    const user = await this.studentRepository.findOne(userId);
+  public async sendPushNotification(studentId: number, message: string) {
+    const user = await this.studentRepository.findOne(studentId);
 
     if (!user) {
       throw new HttpException(
@@ -177,5 +177,9 @@ export default class StudentService {
     }
 
     return this.notificationService.sendPush(user.expoPushToken, message);
+  }
+
+  public async delete(studentId: number) {
+    return this.studentRepository.nativeDelete(studentId);
   }
 }

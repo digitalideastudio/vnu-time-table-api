@@ -1,5 +1,13 @@
 import StudentService from './student.service';
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -38,6 +46,17 @@ export default class StudentController {
     return this.studentService.update(studentData);
   }
 
+  @ApiOperation({ summary: 'Delete a student' })
+  @ApiResponse({
+    status: 200,
+    description: 'Student has been successfully deleted',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @Delete()
+  async delete(@Query('studentId') studentId: number) {
+    return this.studentService.delete(studentId);
+  }
+
   @ApiOperation({ summary: 'Get all students' })
   @ApiResponse({
     status: 200,
@@ -59,8 +78,8 @@ export default class StudentController {
   @Post('/send-push-notification')
   async sendPushNotification(
     @Body('message') message: string,
-    @Query('userId') userId: number,
+    @Query('studentId') studentId: number,
   ) {
-    return this.studentService.sendPushNotification(userId, message);
+    return this.studentService.sendPushNotification(studentId, message);
   }
 }
