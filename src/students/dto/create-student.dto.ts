@@ -24,4 +24,6 @@ export default class CreateStudentDto {
 
   @IsNotEmpty()
   deviceLocale: string;
+
+  enableNotifications: boolean;
 }

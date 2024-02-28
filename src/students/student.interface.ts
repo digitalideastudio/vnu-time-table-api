@@ -9,6 +9,7 @@ export interface IStudentData {
   year: number;
   locale: string;
   deviceLocale: string;
+  enableNotifications: boolean;
 }
 
 export interface IStudentRO {

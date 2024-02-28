@@ -66,6 +66,9 @@ export default class Student {
   @Property()
   deviceLocale: string;
 
+  @Property({ default: true, nullable: true })
+  enableNotifications: boolean;
+
   constructor(
     email: string,
     expoPushToken: string,
@@ -74,6 +77,7 @@ export default class Student {
     year: number,
     locale: string,
     deviceLocale: string,
+    enableNotifications: boolean,
   ) {
     this.faculty = faculty;
     this.expoPushToken = expoPushToken;
@@ -82,6 +86,7 @@ export default class Student {
     this.group = group;
     this.locale = locale;
     this.deviceLocale = deviceLocale;
+    this.enableNotifications = enableNotifications;
   }
 
   public toJSON() {

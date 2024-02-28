@@ -228,6 +228,16 @@
           "primary": false,
           "nullable": false,
           "mappedType": "text"
+        },
+        "enable_notifications": {
+          "name": "enable_notifications",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "default": "true",
+          "mappedType": "integer"
         }
       },
       "name": "student",

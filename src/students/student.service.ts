@@ -33,6 +33,7 @@ export default class StudentService {
       groupId,
       locale,
       deviceLocale,
+      enableNotifications,
     } = dto;
 
     const exists = await this.studentRepository.count({
@@ -82,6 +83,7 @@ export default class StudentService {
       year,
       locale,
       deviceLocale,
+      enableNotifications,
     );
     const errors = await validate(student);
 
@@ -158,6 +160,7 @@ export default class StudentService {
       group: student.group,
       locale: student.locale,
       deviceLocale: student.deviceLocale,
+      enableNotifications: student.enableNotifications,
     };
 
     return { student: studentRO };

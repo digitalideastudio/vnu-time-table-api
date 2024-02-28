@@ -37,4 +37,6 @@ export default class UpdateStudentDto {
 
   @IsNotEmpty()
   deviceLocale: string;
+
+  enableNotifications: boolean;
 }
