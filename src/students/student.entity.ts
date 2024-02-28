@@ -23,7 +23,7 @@ export default class Student {
     example: 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]',
     description: 'The token to send push notifications',
   })
-  @Property()
+  @Property({ nullable: true })
   expoPushToken: string;
 
   @ApiProperty({

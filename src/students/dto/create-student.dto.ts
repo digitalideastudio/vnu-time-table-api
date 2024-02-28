@@ -1,9 +1,7 @@
-import { Contains, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export default class CreateStudentDto {
-  @IsNotEmpty()
   @IsString()
-  @Contains('ExponentPushToken')
   readonly expoPushToken: string;
 
   @IsNotEmpty()
