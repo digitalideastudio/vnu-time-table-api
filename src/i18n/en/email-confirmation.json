@@ -1,0 +1,4 @@
+{
+  "subject": "Email confirmation",
+  "text": "Hello, your confirmation code is {code}"
+}

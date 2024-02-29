@@ -13,6 +13,8 @@ import { StudentModule } from './students/student.module';
 import { FacultyModule } from './faculties/faculty.module';
 import { GroupModule } from './groups/group.module';
 import { TimetableModule } from './timetables/timetable.module';
+import * as path from 'path';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 
 @Module({
   imports: [
@@ -22,6 +24,18 @@ import { TimetableModule } from './timetables/timetable.module';
         limit: 30,
       },
     ]),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      typesOutputPath: path.join(
+        __dirname,
+        '../src/generated/i18n.generated.ts',
+      ),
+      resolvers: [AcceptLanguageResolver],
+    }),
     MikroOrmModule.forRoot(),
     FacultyModule,
     GroupModule,

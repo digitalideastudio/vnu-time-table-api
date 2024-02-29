@@ -69,6 +69,12 @@ export default class Student {
   @Property({ default: true, nullable: true })
   enableNotifications: boolean;
 
+  @Property({ default: false, nullable: true })
+  emailConfirmed: boolean;
+
+  @Property({ default: false, nullable: true })
+  confirmationCode: string;
+
   constructor(
     email: string,
     expoPushToken: string,

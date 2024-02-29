@@ -97,6 +97,7 @@ export default class StudentService {
       );
     } else {
       await this.em.persistAndFlush(student);
+      await this.sendEmailConfirmation(student, email);
       return this.buildStudentRO(student);
     }
   }
@@ -138,12 +139,19 @@ export default class StudentService {
       );
     }
 
+    if (dto.email !== student.email || !student.emailConfirmed) {
+      await this.sendEmailConfirmation(student, dto.email);
+    }
+
     wrap(student).assign({
       expoPushToken: dto.expoPushToken,
       email: dto.email,
       faculty,
       group,
       year: dto.year,
+      locale: dto.locale,
+      deviceLocale: dto.deviceLocale,
+      enableNotifications: dto.enableNotifications,
     });
     await this.em.flush();
 
@@ -160,6 +168,7 @@ export default class StudentService {
       group: student.group,
       locale: student.locale,
       deviceLocale: student.deviceLocale,
+      emailConfirmed: student.emailConfirmed,
       enableNotifications: student.enableNotifications,
     };
 
@@ -183,6 +192,50 @@ export default class StudentService {
   }
 
   public async delete(studentId: number) {
-    return this.studentRepository.nativeDelete(studentId);
+    const deletedCount = await this.studentRepository.nativeDelete(studentId);
+
+    return {
+      status: deletedCount > 0 ? 'success' : 'fail',
+    };
+  }
+
+  public async confirmEmail(email: string, code: string) {
+    try {
+      const student = await this.studentRepository.findOneOrFail({
+        email,
+        confirmationCode: code,
+      });
+
+      student.emailConfirmed = true;
+      student.confirmationCode = null;
+
+      await this.em.flush();
+
+      return {
+        status: 'success',
+      };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          message: 'ERR_INVALID_CONFIRMATION_CODE',
+          errors: { email: 'ERR_INVALID_CONFIRMATION_CODE' },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private async sendEmailConfirmation(student: Student, email: string) {
+    // Generate random 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await this.notificationService.sendEmailConfirmation(
+      email,
+      code,
+      student.locale,
+    );
+
+    student.confirmationCode = code;
+    await this.em.flush();
   }
 }

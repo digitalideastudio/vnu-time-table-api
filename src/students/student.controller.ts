@@ -82,4 +82,15 @@ export default class StudentController {
   ) {
     return this.studentService.sendPushNotification(studentId, message);
   }
+
+  @ApiOperation({ summary: 'Confirm email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Email has been successfully confirmed',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @Post('/confirm-email')
+  async confirmEmail(@Body('email') email: string, @Body('code') code: string) {
+    return this.studentService.confirmEmail(email, code);
+  }
 }

@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
+// https://nestjs-i18n.com/guides/type-safety
 export default class CreateStudentDto {
   @IsString()
   readonly expoPushToken: string;

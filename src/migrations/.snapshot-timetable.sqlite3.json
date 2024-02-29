@@ -238,6 +238,26 @@
           "nullable": true,
           "default": "true",
           "mappedType": "integer"
+        },
+        "email_confirmed": {
+          "name": "email_confirmed",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "default": "false",
+          "mappedType": "integer"
+        },
+        "confirmation_code": {
+          "name": "confirmation_code",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "default": "false",
+          "mappedType": "text"
         }
       },
       "name": "student",
