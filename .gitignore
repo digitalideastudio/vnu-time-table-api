@@ -41,3 +41,5 @@ lerna-debug.log*
 # Config
 *.env
 /temp
+
+/expo-415900-9d1f4c73b8d0.json
