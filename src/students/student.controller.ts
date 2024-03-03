@@ -17,6 +17,7 @@ import {
 import CreateStudentDto from './dto/create-student.dto';
 import Student from './student.entity';
 import UpdateStudentDto from './dto/update-student.dto';
+import { NotificationType } from '../notifications/notification.service';
 
 @ApiBearerAuth()
 @ApiTags('students')
@@ -79,8 +80,9 @@ export default class StudentController {
   async sendPushNotification(
     @Body('message') message: string,
     @Query('studentId') studentId: number,
+    @Query('type') type: NotificationType,
   ) {
-    return this.studentService.sendPushNotification(studentId, message);
+    return this.studentService.sendPushNotification(studentId, message, type);
   }
 
   @ApiOperation({ summary: 'Confirm email' })
@@ -92,5 +94,18 @@ export default class StudentController {
   @Post('/confirm-email')
   async confirmEmail(@Body('email') email: string, @Body('code') code: string) {
     return this.studentService.confirmEmail(email, code);
+  }
+
+  @ApiOperation({
+    summary: 'Send random motivation for all or specific students',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Motivation has been successfully sent',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @Post('/send-random-motivation')
+  async sendMotivation(@Body('studentIds') studentIds: number[]) {
+    return this.studentService.sendRandomMotivation(studentIds);
   }
 }

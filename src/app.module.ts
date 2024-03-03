@@ -15,6 +15,8 @@ import { GroupModule } from './groups/group.module';
 import { TimetableModule } from './timetables/timetable.module';
 import * as path from 'path';
 import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MotivationModule } from './motivations/motivation.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
     GroupModule,
     StudentModule,
     TimetableModule,
+    MotivationModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [

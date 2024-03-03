@@ -6,6 +6,11 @@ import { MailgunMessageData, MailgunService } from 'nestjs-mailgun';
 import { I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from '../generated/i18n.generated';
 
+export enum NotificationType {
+  MOTIVATION = 'MOTIVATION',
+  TIMETABLE = 'TIMETABLE',
+}
+
 @Injectable()
 export default class NotificationService {
   private expo: Expo;
@@ -19,7 +24,11 @@ export default class NotificationService {
     this.expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
   }
 
-  public async sendPush(expoPushToken: string, message: string) {
+  public async sendPush(
+    expoPushToken: string,
+    message: string,
+    type: NotificationType,
+  ) {
     if (!Expo.isExpoPushToken(expoPushToken)) {
       console.error(
         `Push token ${expoPushToken} is not a valid Expo push token`,
@@ -33,6 +42,11 @@ export default class NotificationService {
         to: expoPushToken,
         sound: 'default',
         body: message,
+        badge: 1,
+        data: {
+          type,
+          message,
+        },
       },
     ];
 
@@ -48,7 +62,7 @@ export default class NotificationService {
       // Store the tickets for later use in DB
       ticketChunks.forEach((t) => {
         const ticket = new Ticket(t, message, expoPushToken);
-        this.em.persist(ticket);
+        this.em.fork().persist(ticket);
       });
     }
   }

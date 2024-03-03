@@ -1,7 +1,9 @@
 import {
+  Collection,
   Entity,
   EntityDTO,
   EntityRepositoryType,
+  ManyToMany,
   ManyToOne,
   PrimaryKey,
   Property,
@@ -11,6 +13,7 @@ import StudentRepository from './student.repository';
 import Faculty from '../faculties/faculty.entity';
 import Group from '../groups/group.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import Motivation from '../motivations/motivation.entity';
 
 @Entity({ repository: () => StudentRepository })
 export default class Student {
@@ -55,12 +58,6 @@ export default class Student {
   group: Group;
 
   @Property()
-  createdAt = new Date();
-
-  @Property({ onUpdate: () => new Date() })
-  updatedAt = new Date();
-
-  @Property()
   locale: string;
 
   @Property()
@@ -74,6 +71,22 @@ export default class Student {
 
   @Property({ default: false, nullable: true })
   confirmationCode: string;
+
+  // @ManyToMany({
+  //   pivotTable: 'motivation_recipients',
+  //   joinColumn: 'motivation_id',
+  //   inverseJoinColumn: 'student_id',
+  //   fixedOrder: true,
+  //   autoincrement: true,
+  // })
+  @ManyToMany({ mappedBy: 'recipients' })
+  motivations = new Collection<Motivation>(this);
+
+  @Property()
+  createdAt = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt = new Date();
 
   constructor(
     email: string,

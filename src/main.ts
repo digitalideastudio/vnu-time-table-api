@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { json } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -10,6 +11,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   app.disable('x-powered-by');
   app.getHttpAdapter().getInstance().disable('x-powered-by');
+  app.use(json({ limit: '100mb' }));
 
   const options = new DocumentBuilder()
     .setTitle('VNU Timetable API')

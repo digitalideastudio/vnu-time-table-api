@@ -6,6 +6,7 @@ import StudentController from './student.controller';
 import { FacultyModule } from '../faculties/faculty.module';
 import { GroupModule } from '../groups/group.module';
 import { NotificationModule } from '../notifications/notification.module';
+import { MotivationModule } from '../motivations/motivation.module';
 
 @Module({
   controllers: [StudentController],
@@ -15,6 +16,7 @@ import { NotificationModule } from '../notifications/notification.module';
     FacultyModule,
     GroupModule,
     NotificationModule,
+    MotivationModule,
   ],
   providers: [StudentService],
 })

@@ -8,7 +8,11 @@ import CreateStudentDto from './dto/create-student.dto';
 import StudentRepository from './student.repository';
 import FacultyService from '../faculties/faculty.service';
 import GroupService from '../groups/group.service';
-import NotificationService from '../notifications/notification.service';
+import NotificationService, {
+  NotificationType,
+} from '../notifications/notification.service';
+import MotivationService from '../motivations/motivation.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export default class StudentService {
@@ -17,6 +21,7 @@ export default class StudentService {
     private readonly facultyService: FacultyService,
     private readonly groupService: GroupService,
     private readonly notificationService: NotificationService,
+    private readonly motivationService: MotivationService,
     private readonly em: EntityManager,
   ) {}
 
@@ -175,7 +180,11 @@ export default class StudentService {
     return { student: studentRO };
   }
 
-  public async sendPushNotification(studentId: number, message: string) {
+  public async sendPushNotification(
+    studentId: number,
+    message: string,
+    type: NotificationType,
+  ) {
     const user = await this.studentRepository.findOne(studentId);
 
     if (!user) {
@@ -188,7 +197,7 @@ export default class StudentService {
       );
     }
 
-    return this.notificationService.sendPush(user.expoPushToken, message);
+    return this.notificationService.sendPush(user.expoPushToken, message, type);
   }
 
   public async delete(studentId: number) {
@@ -221,6 +230,47 @@ export default class StudentService {
           errors: { email: 'ERR_INVALID_CONFIRMATION_CODE' },
         },
         HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  /**
+   * Sends random motivation to all students, who have enabled notifications.
+   * Every motivation is unique for each student and is recorded in the database to prevent sending the same motivation twice.
+   * If a student has already received all available motivations, it receives a random one from the beginning.
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_10AM, {
+    name: 'send-random-motivation',
+    timeZone: 'Europe/Kyiv',
+  })
+  public async sendRandomMotivation(ids: number[] = []) {
+    // Get all students with enabled notifications
+    //  and non-empty expoPushToken
+    //  and with the given ids (if ids are not empty)
+    const students = await this.studentRepository.find(
+      {
+        enableNotifications: true,
+        expoPushToken: { $ne: null },
+        id: ids.length > 0 ? { $in: ids } : { $ne: null },
+      },
+      {
+        populate: ['motivations'],
+      },
+    );
+
+    console.log(students.length, 'students found');
+
+    for (const student of students) {
+      const motivation =
+        await this.motivationService.getRandomMotivationForStudent(student);
+
+      student.motivations.add(motivation);
+      await this.em.fork().flush();
+
+      await this.notificationService.sendPush(
+        student.expoPushToken,
+        motivation.text,
+        NotificationType.MOTIVATION,
       );
     }
   }
