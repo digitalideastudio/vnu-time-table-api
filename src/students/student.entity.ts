@@ -72,13 +72,6 @@ export default class Student {
   @Property({ default: false, nullable: true })
   confirmationCode: string;
 
-  // @ManyToMany({
-  //   pivotTable: 'motivation_recipients',
-  //   joinColumn: 'motivation_id',
-  //   inverseJoinColumn: 'student_id',
-  //   fixedOrder: true,
-  //   autoincrement: true,
-  // })
   @ManyToMany({ mappedBy: 'recipients' })
   motivations = new Collection<Motivation>(this);
 

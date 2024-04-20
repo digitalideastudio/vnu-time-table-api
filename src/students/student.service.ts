@@ -163,6 +163,27 @@ export default class StudentService {
     return this.buildStudentRO(student);
   }
 
+  public async findByEmail(email: string) {
+    const student = await this.studentRepository.findOne(
+      { email },
+      {
+        populate: ['faculty', 'group', 'motivations'],
+      },
+    );
+
+    if (!student) {
+      throw new HttpException(
+        {
+          message: 'ERR_NOT_FOUND',
+          errors: { email: 'ERR_NOT_FOUND' },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.buildStudentRO(student);
+  }
+
   private buildStudentRO(student: Student) {
     const studentRO = {
       id: student.id,
@@ -232,6 +253,20 @@ export default class StudentService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  /**
+   * Returns all motivations for a student ordered by creation date (desc).
+   *
+   * @param id
+   */
+  public async getMotivations(id: number) {
+    const student = await this.studentRepository.findOneOrFail(id, {
+      populate: ['motivations'],
+      orderBy: { motivations: { createdAt: 'desc' } },
+    });
+
+    return student.motivations.getItems();
   }
 
   /**

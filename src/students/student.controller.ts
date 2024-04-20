@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Query,
@@ -107,5 +108,28 @@ export default class StudentController {
   @Post('/send-random-motivation')
   async sendMotivation(@Body('studentIds') studentIds: number[]) {
     return this.studentService.sendRandomMotivation(studentIds);
+  }
+
+  @ApiOperation({ summary: 'Get student by email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Student has been successfully found',
+  })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  @Get()
+  async findByEmail(@Query('email') email: string) {
+    return this.studentService.findByEmail(email);
+  }
+
+  @ApiOperation({ summary: 'Get student motivations' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of student motivations',
+    type: Student,
+    isArray: true,
+  })
+  @Get(':id/motivations')
+  async getMotivations(@Param('id') id: number) {
+    return this.studentService.getMotivations(id);
   }
 }

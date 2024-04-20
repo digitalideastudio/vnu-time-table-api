@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    // @ts-ignore
+    // @ts-expect-error Authorization header is not defined in Request type
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
     return type === 'Bearer' ? token : undefined;
