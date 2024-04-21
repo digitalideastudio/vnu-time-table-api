@@ -31,7 +31,7 @@ export default class StudentService {
 
   public async findOne(id: number) {
     const student = await this.studentRepository.findOneOrFail(id, {
-      populate: ['faculty', 'group', 'motivations'],
+      populate: ['faculty', 'group'],
       orderBy: { motivations: { createdAt: 'desc' } },
     });
 
