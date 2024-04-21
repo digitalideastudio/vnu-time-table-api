@@ -54,6 +54,7 @@ export default class StudentService {
       // and revoke them if necessary.
       // For now, we just send a new confirmation code
       await this.sendEmailConfirmation(existing, email);
+      existing.emailConfirmed = false;
       return this.buildStudentRO(existing);
     }
 
