@@ -53,8 +53,9 @@ export default class StudentService {
       // to be able to view all active sessions for a user
       // and revoke them if necessary.
       // For now, we just send a new confirmation code
-      await this.sendEmailConfirmation(existing, email);
       existing.emailConfirmed = false;
+      await this.sendEmailConfirmation(existing, email);
+
       return this.buildStudentRO(existing);
     }
 
@@ -148,6 +149,7 @@ export default class StudentService {
     }
 
     if (dto.email !== student.email || !student.emailConfirmed) {
+      student.emailConfirmed = false;
       await this.sendEmailConfirmation(student, dto.email);
     }
 
