@@ -41,18 +41,20 @@ export default class StudentService {
       enableNotifications,
     } = dto;
 
-    const exists = await this.studentRepository.count({
+    const existing = await this.studentRepository.findOne({
       $or: [{ email }],
     });
 
-    if (exists > 0) {
-      throw new HttpException(
-        {
-          message: 'ERR_EMAIL_EXISTS',
-          errors: { email: 'ERR_EMAIL_EXISTS' },
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+    if (existing) {
+      // TODO: Record this session in the database
+      // to avoid breaking the user's session on another device
+      // better to use a separate table for this
+      // and store the session id, user id, and device id
+      // to be able to view all active sessions for a user
+      // and revoke them if necessary.
+      // For now, we just send a new confirmation code
+      await this.sendEmailConfirmation(existing, email);
+      return this.buildStudentRO(existing);
     }
 
     const faculty = await this.facultyService.findOne(facultyId);

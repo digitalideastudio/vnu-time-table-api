@@ -26,10 +26,14 @@ import { NotificationType } from '../notifications/notification.service';
 export default class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
-  @ApiOperation({ summary: 'Register a new student' })
+  @ApiOperation({ summary: 'Register a student' })
   @ApiResponse({
     status: 201,
-    description: 'Student has been successfully registered',
+    description: 'A new student has been successfully registered',
+  })
+  @ApiResponse({
+    status: 304,
+    description: 'Student has been successfully retrieved',
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Post()

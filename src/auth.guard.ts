@@ -24,6 +24,8 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
+    // TODO: Implement user email verification
+    // so that only verified users can access the API
     if (!token || token !== API_TOKEN) {
       throw new UnauthorizedException();
     }
