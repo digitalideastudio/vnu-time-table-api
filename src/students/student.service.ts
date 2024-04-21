@@ -30,8 +30,9 @@ export default class StudentService {
   }
 
   public async findOne(id: number) {
-    const student = await this.studentRepository.findOne(id, {
+    const student = await this.studentRepository.findOneOrFail(id, {
       populate: ['faculty', 'group', 'motivations'],
+      orderBy: { motivations: { createdAt: 'desc' } },
     });
 
     if (!student) {
@@ -219,12 +220,7 @@ export default class StudentService {
       deviceLocale: student.deviceLocale,
       emailConfirmed: student.emailConfirmed,
       enableNotifications: student.enableNotifications,
-      motivations: [],
     };
-
-    if (student.motivations) {
-      studentRO.motivations = student.motivations.getItems();
-    }
 
     return { student: studentRO };
   }
