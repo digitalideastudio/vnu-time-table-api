@@ -295,14 +295,14 @@ export default class StudentService {
       },
     );
 
-    console.log(students.length, 'students found');
+    console.log(students.length, 'students FOUND');
 
     for (const student of students) {
       const motivation =
         await this.motivationService.getRandomMotivationForStudent(student);
 
       student.motivations.add(motivation);
-      await this.em.fork().flush();
+      await this.em.persistAndFlush(student);
 
       await this.notificationService.sendPush(
         student.expoPushToken,
