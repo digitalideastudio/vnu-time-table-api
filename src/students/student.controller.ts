@@ -75,6 +75,17 @@ export default class StudentController {
     return this.studentService.findAll();
   }
 
+  @ApiOperation({ summary: 'Get student by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Student has been successfully found',
+  })
+  @ApiResponse({ status: 404, description: 'Student not found' })
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return this.studentService.findOne(id);
+  }
+
   @ApiOperation({ summary: 'Send push notification to a student' })
   @ApiResponse({
     status: 200,

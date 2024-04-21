@@ -29,6 +29,24 @@ export default class StudentService {
     return this.studentRepository.findAll();
   }
 
+  public async findOne(id: number) {
+    const student = await this.studentRepository.findOne(id, {
+      populate: ['faculty', 'group', 'motivations'],
+    });
+
+    if (!student) {
+      throw new HttpException(
+        {
+          message: 'ERR_NOT_FOUND',
+          errors: { id: 'ERR_NOT_FOUND' },
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.buildStudentRO(student);
+  }
+
   public async register(dto: CreateStudentDto): Promise<IStudentRO> {
     const {
       expoPushToken,
@@ -201,7 +219,12 @@ export default class StudentService {
       deviceLocale: student.deviceLocale,
       emailConfirmed: student.emailConfirmed,
       enableNotifications: student.enableNotifications,
+      motivations: [],
     };
+
+    if (student.motivations) {
+      studentRO.motivations = student.motivations.getItems();
+    }
 
     return { student: studentRO };
   }

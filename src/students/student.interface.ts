@@ -1,5 +1,6 @@
 import Faculty from '../faculties/faculty.entity';
 import Group from '../groups/group.entity';
+import Motivation from '../motivations/motivation.entity';
 
 export interface IStudentData {
   expoPushToken: string;
@@ -10,6 +11,7 @@ export interface IStudentData {
   locale: string;
   deviceLocale: string;
   enableNotifications: boolean;
+  motivations?: Motivation[];
 }
 
 export interface IStudentRO {
