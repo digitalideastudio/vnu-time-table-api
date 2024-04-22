@@ -30,7 +30,7 @@ export default class StudentService {
   }
 
   public async findOne(id: number) {
-    const student = await this.studentRepository.findOneOrFail(id, {
+    const student = await this.studentRepository.findOne(id, {
       populate: ['faculty', 'group'],
       orderBy: { motivations: { createdAt: 'desc' } },
     });
@@ -38,8 +38,8 @@ export default class StudentService {
     if (!student) {
       throw new HttpException(
         {
-          message: 'ERR_NOT_FOUND',
-          errors: { id: 'ERR_NOT_FOUND' },
+          message: 'ERR_STUDENT_NOT_FOUND',
+          errors: { id: 'ERR_STUDENT_NOT_FOUND' },
         },
         HttpStatus.NOT_FOUND,
       );
@@ -131,13 +131,15 @@ export default class StudentService {
   }
 
   public async update(dto: UpdateStudentDto) {
-    const student = await this.studentRepository.findOne(dto.id);
+    const student = await this.studentRepository.findOne(dto.id, {
+      populate: ['faculty', 'group', 'motivations'],
+    });
 
     if (!student) {
       throw new HttpException(
         {
-          message: 'ERR_BAD_INPUT',
-          errors: { id: 'ERR_BAD_INPUT' },
+          message: 'ERR_STUDENT_NOT_FOUND',
+          errors: { id: 'ERR_STUDENT_NOT_FOUND' },
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -167,9 +169,16 @@ export default class StudentService {
       );
     }
 
+    // If the email has changed or the email is not confirmed,
+    // send a new confirmation code
+    // and set emailConfirmed to false
     if (dto.email !== student.email || !student.emailConfirmed) {
       student.emailConfirmed = false;
       await this.sendEmailConfirmation(student, dto.email);
+    } else if (!student.motivations.length) {
+      // If the student has no motivations,
+      // send a random motivation
+      await this.sendRandomMotivation([student.id]);
     }
 
     wrap(student).assign({
@@ -285,10 +294,20 @@ export default class StudentService {
    * @param id
    */
   public async getMotivations(id: number) {
-    const student = await this.studentRepository.findOneOrFail(id, {
+    const student = await this.studentRepository.findOne(id, {
       populate: ['motivations'],
       orderBy: { motivations: { createdAt: 'desc' } },
     });
+
+    if (!student) {
+      throw new HttpException(
+        {
+          message: 'ERR_STUDENT_NOT_FOUND',
+          errors: { id: 'ERR_STUDENT_NOT_FOUND' },
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return student.motivations.getItems();
   }
