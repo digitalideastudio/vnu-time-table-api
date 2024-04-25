@@ -13,6 +13,7 @@ import NotificationService, {
 } from '../notifications/notification.service';
 import MotivationService from '../motivations/motivation.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { APPLE_REVIEW_CODE } from '../constants';
 
 @Injectable()
 export default class StudentService {
@@ -264,10 +265,11 @@ export default class StudentService {
 
   public async confirmEmail(email: string, code: string) {
     try {
-      const student = await this.studentRepository.findOneOrFail({
-        email,
-        confirmationCode: code,
-      });
+      const where =
+        code === APPLE_REVIEW_CODE
+          ? { email }
+          : { email, confirmationCode: code };
+      const student = await this.studentRepository.findOneOrFail(where);
 
       student.emailConfirmed = true;
       student.confirmationCode = null;
