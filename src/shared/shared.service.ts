@@ -2,6 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createHash } from 'node:crypto';
 import { exec } from 'node:child_process';
+import OpenAI from 'openai';
+
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
+
+const openai = new OpenAI({
+  apiKey: OPENAI_API_KEY,
+});
 
 export enum CONTENT_TYPE {
   JSON = 'json',
@@ -168,5 +175,46 @@ export default class SharedService {
     return Array.from(str)
       .map((char) => (win1251Mapping[char] ? '%' + win1251Mapping[char] : char))
       .join('');
+  }
+
+  public async getAITextResponse(query: string) {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'user',
+          content: query,
+        },
+      ],
+      temperature: 1,
+      max_tokens: 256,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const content = response.choices[0].message.content;
+    console.log(content);
+
+    return content;
+  }
+
+  public async getAIImageResponse(query: string) {
+    const response = await openai.images.generate({
+      // model: 'dall-e-2',
+      model: 'dall-e-3',
+      prompt: query,
+      n: 1,
+      // size: '256x256',
+      size: '1024x1024',
+      quality: 'hd',
+      response_format: 'url',
+      style: 'natural',
+    });
+
+    const image_url = response.data[0].url;
+    console.log(image_url);
+
+    return image_url;
   }
 }

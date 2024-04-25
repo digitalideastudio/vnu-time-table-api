@@ -17,6 +17,7 @@ import * as path from 'path';
 import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MotivationModule } from './motivations/motivation.module';
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { MotivationModule } from './motivations/motivation.module';
     StudentModule,
     TimetableModule,
     MotivationModule,
+    WeatherModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [],
