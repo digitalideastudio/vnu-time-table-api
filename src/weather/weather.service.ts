@@ -251,7 +251,7 @@ export default class WeatherService {
     };
 
     hourlyForecasts.forEach((forecast) => {
-      const date = new Date(forecast.dt * 1000);
+      // const date = new Date(forecast.dt * 1000);
       const temperature = forecast.main.temp;
       const description = forecast.weather[0].description;
       const windSpeed = forecast.wind.speed;

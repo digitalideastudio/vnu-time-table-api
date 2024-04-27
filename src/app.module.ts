@@ -18,6 +18,7 @@ import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MotivationModule } from './motivations/motivation.module';
 import { WeatherModule } from './weather/weather.module';
+import { EventModule } from './events/event.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { WeatherModule } from './weather/weather.module';
     TimetableModule,
     MotivationModule,
     WeatherModule,
+    EventModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [],
