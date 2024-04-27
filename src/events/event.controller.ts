@@ -14,15 +14,27 @@ import {
 export default class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @ApiOperation({ summary: 'Get all motivations' })
+  @ApiOperation({ summary: 'Get university events' })
   @ApiResponse({
     status: 200,
-    description: 'List of all events',
+    description: 'List of university events',
     type: Event,
     isArray: true,
   })
   @Get()
-  async findAll(): Promise<Event[]> {
+  async findAll() {
     return this.eventService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Get external events' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of external events',
+    type: Event,
+    isArray: true,
+  })
+  @Get('external')
+  async findExternal(): Promise<Event[]> {
+    return this.eventService.findExternal();
   }
 }
