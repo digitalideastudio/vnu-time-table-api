@@ -174,9 +174,6 @@ export default class StudentService {
     // send a new confirmation code
     // and set emailConfirmed to false
     if (dto.email !== student.email || !student.emailConfirmed) {
-      console.log(
-        `Email has changed or is not confirmed: ${dto.email}, ${student.email}, ${student.emailConfirmed}`,
-      );
       student.emailConfirmed = false;
       await this.sendEmailConfirmation(student, dto.email);
     } else if (!student.motivations.length) {

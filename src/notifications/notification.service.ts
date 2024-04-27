@@ -34,7 +34,7 @@ export default class NotificationService {
         `Push token ${expoPushToken} is not a valid Expo push token`,
       );
 
-      throw new Error('Invalid push token');
+      return;
     }
 
     const messages: ExpoPushMessage[] = [
